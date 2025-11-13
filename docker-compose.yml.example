@@ -1,0 +1,121 @@
+# Dockerator - Docker Compose Template
+# Copy this to docker-compose.yml to start fresh
+# The actual docker-compose.yml is modified by scripts and git-ignored
+
+networks:
+  dockerator:
+    driver: bridge
+
+services:
+  # =================================================================
+  # TRAEFIK - Dynamic Reverse Proxy
+  # =================================================================
+  traefik:
+    image: traefik:v3.0
+    container_name: dockerator_traefik
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - dockerator
+    restart: unless-stopped
+
+  # =================================================================
+  # MYSQL - Shared Database Server
+  # =================================================================
+  # Projects will create individual databases/users in this MySQL instance
+  mysql:
+    image: mysql:8.4
+    container_name: dockerator_mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: dockerator
+      TZ: "Europe/Zurich"
+    networks:
+      - dockerator
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =================================================================
+  # ADMINER - Database Management UI
+  # =================================================================
+  # Access at: http://adminer.localhost
+  # Server: mysql | Username: root | Password: dockerator
+  adminer:
+    image: adminer:latest
+    container_name: dockerator_adminer
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer.localhost`)"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+      TZ: "Europe/Zurich"
+    networks:
+      - dockerator
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # =================================================================
+  # MAILPIT - Email Testing
+  # =================================================================
+  # Web UI: http://mailpit.localhost
+  # SMTP: mailpit:1025 (use from WordPress/apps)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: dockerator_mailpit
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailpit.rule=Host(`mailpit.localhost`)"
+      - "traefik.http.services.mailpit.loadbalancer.server.port=8025"
+    ports:
+      - "1025:1025"
+    environment:
+      TZ: "Europe/Zurich"
+    networks:
+      - dockerator
+
+  # =================================================================
+  # YOUR PROJECTS WILL BE ADDED BELOW BY SCRIPTS
+  # =================================================================
+  # Example Next.js project structure:
+  #
+  # project-name:
+  #   build:
+  #     context: ./apps/project-name
+  #     dockerfile: Dockerfile
+  #   container_name: dockerator_project_name
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.project-name.rule=Host(`project-name.localhost`)"
+  #     - "traefik.http.services.project-name.loadbalancer.server.port=3000"
+  #   volumes:
+  #     - ./apps/project-name:/app
+  #     - /app/node_modules
+  #     - /app/.next
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - dockerator
+  #   restart: unless-stopped
+
+volumes:
+  mysql_data:
