@@ -1,0 +1,2 @@
+# This file ensures the apps directory is tracked in git
+# Individual app folders are ignored via .gitignore

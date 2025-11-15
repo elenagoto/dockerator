@@ -82,7 +82,7 @@ case $COMMAND in
                 ./scripts/new-nextjs.sh "$PROJECT_NAME"
                 ;;
             wp)
-                echo "WordPress support coming soon!"
+                ./scripts/new-wordpress.sh "$PROJECT_NAME"
                 ;;
             *)
                 echo -e "${RED}Unknown project type: $PROJECT_TYPE${NC}"
@@ -99,6 +99,15 @@ case $COMMAND in
         
         PROJECT_NAME=$2
         ./scripts/remove-project.sh "$PROJECT_NAME"
+        ;;
+    dev)
+        if [ -z "$2" ]; then
+            echo -e "${RED}Usage: dockerator dev <project-name>${NC}"
+            exit 1
+        fi
+        
+        PROJECT_NAME=$2
+        ./scripts/dev-mode.sh "$PROJECT_NAME"
         ;;
     list)
         echo "TODO: List projects"
