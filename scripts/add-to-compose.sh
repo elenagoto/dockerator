@@ -14,24 +14,26 @@ fi
 # Sanitize name
 SAFE_NAME=$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]' | tr '_' '-')
 
-# CHECK 1: Does service already exist in docker-compose.yml?
+# CHECK: Does service already exist in docker-compose.yml?
 if grep -q "^  $SAFE_NAME:" "$COMPOSE_FILE"; then
     echo "⚠️  Service '$SAFE_NAME' already exists in docker-compose.yml"
     echo "   Skipping docker-compose.yml update"
     exit 0
 fi
 
-# The service block to add
-SERVICE_BLOCK="
+# Create temporary file for the service block
+SERVICE_FILE=$(mktemp)
+cat > "$SERVICE_FILE" << EOF
+
   $SAFE_NAME:
     build:
       context: ./apps/$APP_NAME
       dockerfile: Dockerfile
     container_name: dockerator_$SAFE_NAME
     labels:
-      - \"traefik.enable=true\"
-      - \"traefik.http.routers.$SAFE_NAME.rule=Host(\`$SAFE_NAME.localhost\`)\"
-      - \"traefik.http.services.$SAFE_NAME.loadbalancer.server.port=3000\"
+      - "traefik.enable=true"
+      - "traefik.http.routers.$SAFE_NAME.rule=Host(\`$SAFE_NAME.localhost\`)"
+      - "traefik.http.services.$SAFE_NAME.loadbalancer.server.port=3000"
     volumes:
       - ./apps/$APP_NAME:/app
       - /app/node_modules
@@ -41,9 +43,24 @@ SERVICE_BLOCK="
     networks:
       - dockerator
     restart: unless-stopped
-"
+    
+EOF
 
-# Append to docker-compose.yml
-echo "$SERVICE_BLOCK" >> "$COMPOSE_FILE"
+# Create new compose file by inserting service before volumes
+OUTPUT_FILE=$(mktemp)
+
+while IFS= read -r line; do
+    if [[ "$line" == "volumes:" ]]; then
+        # Insert service block before volumes
+        cat "$SERVICE_FILE"
+    fi
+    echo "$line"
+done < "$COMPOSE_FILE" > "$OUTPUT_FILE"
+
+# Replace original file
+mv "$OUTPUT_FILE" "$COMPOSE_FILE"
+
+# Clean up
+rm "$SERVICE_FILE"
 
 echo "✅ Added $SAFE_NAME to docker-compose.yml"
