@@ -31,8 +31,8 @@ sudo ln -s $(pwd)/dockerator /usr/local/bin/dockerator
 sudo nano /etc/hosts
 
 # Add these lines:
-127.0.0.1 adminer.localhost
-127.0.0.1 mailpit.localhost
+127.0.0.1 dockerator-adminer.localhost
+127.0.0.1 dockerator-mailpit.localhost
 ```
 
 ### 3. Start Services
@@ -44,8 +44,8 @@ dockerator up
 ### 4. Access Services
 
 - **Traefik Dashboard**: http://localhost:8080
-- **Adminer** (DB): http://adminer.localhost (user: root, pass: dockerator)
-- **Mailpit** (Email): http://mailpit.localhost
+- **Adminer** (DB): http://dockerator-adminer.localhost (user: root, pass: dockerator)
+- **Mailpit** (Email): http://dockerator-mailpit.localhost
 
 ## Usage
 
@@ -78,17 +78,19 @@ dockerator remove <project-name>
 ### Database Access
 
 **Root Access (for all databases):**
+
 - Server: `mysql`
 - Username: `root`
 - Password: `dockerator`
 
 **Project Databases:**
 Each WordPress site gets:
+
 - Database: `project_name` (underscores)
 - User: `project_name`
 - Password: `project_name`
 
-Access via Adminer at http://adminer.localhost
+Access via Adminer at http://dockerator-adminer.localhost
 
 ## Project Structure
 
@@ -114,6 +116,7 @@ dockerator/
 ### Container-per-Project
 
 Each project runs in its own isolated container:
+
 - ✅ No dependency conflicts
 - ✅ Different Node/PHP versions possible
 - ✅ True isolation
@@ -121,6 +124,7 @@ Each project runs in its own isolated container:
 ### Shared Services
 
 Common services shared across projects:
+
 - **MySQL** - One instance, multiple databases
 - **Adminer** - Access all databases
 - **Mailpit** - Catch all emails from all projects
@@ -129,10 +133,11 @@ Common services shared across projects:
 ### Traefik Auto-Discovery
 
 Services declare routing via Docker labels:
+
 ```yaml
 labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.my-app.rule=Host(`my-app.localhost`)"
+  - 'traefik.enable=true'
+  - 'traefik.http.routers.my-app.rule=Host(`my-app.localhost`)'
 ```
 
 No manual proxy configuration needed!
@@ -177,16 +182,17 @@ dockerator up
 
 ## Comparison with Devner
 
-| Feature | Dockerator | Devner |
-|---------|-----------|--------|
+| Feature      | Dockerator        | Devner            |
+| ------------ | ----------------- | ----------------- |
 | Architecture | Container per app | Single FrankenPHP |
-| Isolation | High | Low |
-| Routing | Traefik (labels) | Caddy (config) |
-| Best For | Learning Docker | Fast WP dev |
+| Isolation    | High              | Low               |
+| Routing      | Traefik (labels)  | Caddy (config)    |
+| Best For     | Learning Docker   | Fast WP dev       |
 
 ## Learning Resources
 
 This project teaches:
+
 - Docker Compose orchestration
 - Container networking
 - Reverse proxy patterns (Traefik)
