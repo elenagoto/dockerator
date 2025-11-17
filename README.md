@@ -1,22 +1,29 @@
 # Dockerator 🐳
 
-> A beginner-friendly Docker orchestration CLI tool for managing multiple Next.js and WordPress projects with zero configuration.
+> A Docker orchestration CLI tool for managing multiple Next.js and WordPress projects with automatic routing and zero configuration.
 
 Inspired by [devner](https://github.com/MarJC5/devner).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+---
+
+## ✨ Features
 
 - 🚀 **One-command project creation** - `dockerator new nextjs|wp <name>`
 - 🗄️ **Shared services** - MySQL, Adminer, Mailpit across all projects
-- 🔄 **Hot reload** - Changes reflect immediately
+- 🔄 **Hot reload** - Changes reflect immediately (Vite + Next.js)
 - 🌐 **Clean URLs** - `project-name.localhost` for each project
-- 🔐 **Auto /etc/hosts sync** - No manual editing needed
+- 🔐 **Auto /etc/hosts sync** - No manual editing
+- 📋 **Project management** - List, open, and manage all projects
+- ⚡ **Shell autocomplete** - Tab completion for commands and projects
+- 🎨 **VS Code integration** - Open projects directly from CLI
 
-## Prerequisites
+---
 
-- **Docker Desktop** installed and running
+## 📋 Prerequisites
+
+- **Docker Desktop** installed and running ([Download](https://www.docker.com/products/docker-desktop))
 - **macOS** or **Linux**
 - Basic terminal knowledge
 
@@ -25,172 +32,267 @@ Inspired by [devner](https://github.com/MarJC5/devner).
 docker --version
 ```
 
-## Quick Start
+---
+
+## 🚀 Quick Start
 
 ```bash
-# 1. Clone and setup
+# 1. Clone and install
 git clone https://github.com/elenagoto/dockerator.git
 cd dockerator
 bash install.sh
-cp docker-compose.yml.example docker-compose.yml
 
-# 2. Make globally available
-sudo ln -s $(pwd)/dockerator /usr/local/bin/dockerator
-
-# 3. Start services
+# 2. Start services
 dockerator up
 
-# 4. Sync hosts file
+# 3. Sync hosts file
 dockerator hosts
 ```
 
-## Access Services
+---
 
-- **Traefik Dashboard**: http://localhost:8080
-- **Adminer** (Database): http://dockerator-adminer.localhost
+## 🌐 Access Services
+
+- 🎛️ **Traefik Dashboard**: http://localhost:8080
+- 🗄️ **Adminer** (Database): http://dockerator-adminer.localhost
   - Server: `mysql` | User: `root` | Pass: `dockerator`
-- **Mailpit** (Email Testing): http://dockerator-mailpit.localhost
+- 📧 **Mailpit** (Email Testing): http://dockerator-mailpit.localhost
 
-## Usage
+---
 
-### Create Projects
+## 📖 Usage
+
+### Creating Projects
+
+#### Next.js Project
 
 ```bash
-# Next.js project
 dockerator new nextjs my-app
 dockerator hosts
 dockerator up
+# Visit: http://my-app.localhost
+```
 
-# WordPress project
+#### WordPress Project
+
+```bash
 dockerator new wp my-site
 dockerator hosts
 dockerator up
+# Visit: http://my-site.localhost
 ```
 
-### WordPress Development with Vite
+---
+
+### 🎨 WordPress Development with Vite
 
 ```bash
 # Enter dev mode (exposes port 5173 for Vite HMR)
 dockerator dev-wp my-site
 
 # Inside container:
-npm install
-npm run dev
+📦 Installing new packages:
+  1. pkill -f 'next dev'    - Stop dev server
+  2. npm install <package>  - Install package
+  3. npm run dev            - Restart dev server
+
+🔧 Other commands:
+  npm run build  - Build for production
+  npm run lint   - Lint code
+
 # When done: exit
 ```
 
-Your theme: `apps/my-site/wp-content/themes/my-site/`
+**Your theme location:** `apps/my-site/wp-content/themes/my-site/`
 
-### Manage Projects
+---
+
+### 💻 Next.js Development
 
 ```bash
-dockerator up              # Start all
-dockerator down            # Stop all
+# Enter dev mode
+dockerator dev-nextjs my-app
+
+# Inside container:
+📦 Installing new packages:
+  1. pkill -f 'next dev'    - Stop dev server
+  2. npm install <package>  - Install package
+  3. npm run dev            - Restart dev server
+
+🔧 Other commands:
+  npm run build  - Build for production
+  npm run lint   - Lint code
+
+# When done: exit
+```
+
+---
+
+### 🛠️ Managing Projects
+
+```bash
+dockerator list            # List all projects with status
+dockerator open <name>     # Open project in VS Code
+dockerator up              # Start all containers
+dockerator down            # Stop all containers
 dockerator logs <name>     # View logs
-dockerator remove <name>   # Remove project
+dockerator remove <name>   # Remove project completely
 dockerator hosts           # Sync /etc/hosts
 ```
 
-## Project Structure
+---
+
+## 📂 Project Structure
 
 ```
 dockerator/
-├── dockerator                   # Main CLI
-├── docker-compose.yml          # Active config (git-ignored)
-├── docker-compose.yml.example  # Template
+├── dockerator                      # Main CLI script
+├── install.sh                      # Installation script
+├── docker-compose.yml              # Active config (git-ignored)
+├── docker-compose.yml.example      # Template
+├── dockerator-completion.bash      # Bash autocomplete
+├── dockerator-completion.zsh       # Zsh autocomplete
 ├── scripts/
-│   ├── templates/              # Project templates
+│   ├── templates/                  # Project templates
+│   │   ├── nextjs/
+│   │   └── wordpress/
 │   ├── new-nextjs.sh
 │   ├── new-wordpress.sh
+│   ├── list-projects.sh
+│   ├── open-project.sh
+│   ├── dev-mode.sh
+│   ├── dev-mode-nextjs.sh
 │   └── sync-hosts.sh
-└── apps/                       # Your projects (git-ignored)
+└── apps/                           # Your projects (git-ignored)
 ```
 
-## WordPress Database Info
+---
 
-Each WordPress site gets:
+## 🗄️ WordPress Database Info
 
-- Database: `project_name` (underscores)
-- User: `project_name`
-- Password: `project_name`
-- Host: `mysql`
+Each WordPress site automatically gets:
+
+- **Database**: `project_name` (underscores)
+- **User**: `project_name`
+- **Password**: `project_name`
+- **Host**: `mysql`
 
 Access all databases via Adminer: http://dockerator-adminer.localhost
 
-## Troubleshooting
+---
 
-### Port 80 in use
+## 🔧 Troubleshooting
+
+### Port 80 Already in Use
 
 ```bash
-# Check what's using it
+# Check what's using port 80
 lsof -i :80
 
 # Stop other Docker projects
 docker-compose down
 ```
 
-### Can't access project.localhost
+### Can't Access project.localhost
 
 ```bash
 # 1. Is container running?
 docker-compose ps
 
-# 2. Is it in /etc/hosts?
+# 2. Sync hosts file
 dockerator hosts
 
 # 3. Check Traefik dashboard
 open http://localhost:8080
 ```
 
-### WordPress can't connect to database
+### WordPress Can't Connect to Database
 
 ```bash
-# Wait for MySQL to be healthy (~30 seconds)
+# Wait ~30 seconds for MySQL to be healthy
 docker-compose ps
 
 # Check MySQL logs
 dockerator logs mysql
 ```
 
-### Permission denied removing files
+### Permission Denied Removing Files
 
 ```bash
-# Docker creates files as root, use Docker to remove
+# Docker creates files as root, use Docker to remove them
 docker run --rm -v "$(pwd)":/data alpine rm -rf /data/apps/project-name
 ```
 
-### First WordPress build is slow
+### First WordPress Build is Slow
 
-First WP project: ~2-3 minutes (installs PHP extensions)  
-Second WP project: ~1 minute (uses cache)  
-Reopening existing: instant
-
-## Common Mistakes
-
-- ❌ Forgetting `dockerator hosts` after creating projects
-- ❌ Editing `docker-compose.yml` directly (edit `.example` instead)
-- ❌ Not waiting for MySQL to be ready before accessing WordPress
-
-## Contributing
-
-Contributions welcome! Fork, create a feature branch, and open a PR.
-
-Ideas:
-
-- Laravel support
-- `dockerator list` command
-- GUI dashboard
-- Backup/restore functionality
-
-## License
-
-MIT - see LICENSE file
-
-## Support
-
-- Bug reports: [Open an issue](https://github.com/elenagoto/dockerator/issues)
-- Feature requests: [Open an issue](https://github.com/elenagoto/dockerator/issues)
+- **First WP project**: ~2-3 minutes (installs PHP extensions + Node.js)
+- **Second WP project**: ~1 minute (uses Docker cache)
+- **Reopening existing**: Instant! ⚡
 
 ---
 
-**Made with ❤️ for developers learning Docker**
+## ⚠️ Common Mistakes
+
+### ❌ Forgetting to sync hosts
+
+```bash
+dockerator new nextjs my-app
+dockerator hosts  # ← Don't forget this!
+```
+
+### ❌ Editing docker-compose.yml directly
+
+```bash
+# Wrong:
+nano docker-compose.yml  # ❌ Changes will be lost
+
+# Right:
+nano docker-compose.yml.example  # ✅ Edit the template
+cp docker-compose.yml.example docker-compose.yml
+```
+
+### ❌ Not waiting for MySQL
+
+Wait ~30 seconds after `dockerator up` before accessing WordPress sites.
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Fork, create a feature branch, and open a PR.
+
+### Ideas for Contributions
+
+- [ ] Laravel support
+- [ ] `dockerator restart <project>` command
+- [ ] GUI dashboard (web-based)
+- [ ] Backup/restore functionality
+- [ ] Windows support (WSL2)
+- [ ] PostgreSQL support
+
+---
+
+## 📄 License
+
+MIT - see [LICENSE](LICENSE) file
+
+---
+
+## 💬 Support
+
+- 🐛 **Bug reports**: [Open an issue](https://github.com/elenagoto/dockerator/issues)
+- 💡 **Feature requests**: [Open an issue](https://github.com/elenagoto/dockerator/issues)
+
+---
+
+## 🙏 Acknowledgments
+
+- **[devner](https://github.com/MarJC5/devner)** by [MarJC5](https://github.com/MarJC5) - The inspiration
+- **[Traefik](https://traefik.io/)** - Dynamic reverse proxy
+- **[FrankenPHP](https://frankenphp.dev/)** - Modern PHP application server
+
+---
+
+**Made with ❤️ for efficient local development**
+
+If this project helped you, give it a ⭐️!
