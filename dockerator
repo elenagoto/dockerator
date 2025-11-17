@@ -144,7 +144,7 @@ case $COMMAND in
         ./scripts/sync-hosts.sh
         ;;
     list)
-        echo "TODO: List projects"
+        ./scripts/list-projects.sh
         ;;
     up)
         docker-compose up -d
