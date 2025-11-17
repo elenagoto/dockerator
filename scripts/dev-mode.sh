@@ -60,18 +60,41 @@ rm -f docker-compose.yml.bak
 
 # Add Vite port to the specified service
 # Insert after the "labels:" section, before "volumes:"
-awk -v service="  $SAFE_URL:" -v port='    ports:\n      - "5173:5173"' '
-$0 ~ service {found=1}
-found && /^    volumes:/ && !done {
-    print port
-    done=1
-}
-{print}
-' docker-compose.yml > docker-compose.yml.tmp
-
-mv docker-compose.yml.tmp docker-compose.yml
-
-echo -e "${GREEN}✅ Added port 5173 to $PROJECT_NAME${NC}"
+# Check if ports section already exists for this service
+if grep -A 20 "^  $SAFE_URL:" docker-compose.yml | grep -q "^    ports:"; then
+    # Ports section exists - check if 5173 is already there
+    if grep -A 20 "^  $SAFE_URL:" docker-compose.yml | grep -q "5173:5173"; then
+        echo -e "${GREEN}✅ Port 5173 already configured for $PROJECT_NAME${NC}"
+    else
+        # Add 5173 to existing ports section
+        awk -v service="  $SAFE_URL:" '
+        $0 ~ service {found=1}
+        found && /^    ports:/ {
+            print
+            getline
+            print
+            print "      - \"5173:5173\""
+            found=0
+            next
+        }
+        {print}
+        ' docker-compose.yml > docker-compose.yml.tmp
+        mv docker-compose.yml.tmp docker-compose.yml
+        echo -e "${GREEN}✅ Added port 5173 to existing ports section${NC}"
+    fi
+else
+    # No ports section - create one
+    awk -v service="  $SAFE_URL:" -v port='    ports:\n      - "5173:5173"' '
+    $0 ~ service {found=1}
+    found && /^    volumes:/ && !done {
+        print port
+        done=1
+    }
+    {print}
+    ' docker-compose.yml > docker-compose.yml.tmp
+    mv docker-compose.yml.tmp docker-compose.yml
+    echo -e "${GREEN}✅ Added port 5173 to $PROJECT_NAME${NC}"
+fi
 
 # Restart the container to apply port changes
 echo -e "${BLUE}🔄 Restarting container...${NC}"

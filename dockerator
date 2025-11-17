@@ -3,6 +3,12 @@
 # Dockerator - Multi-project Docker orchestration
 # Similar to devner but for learning Docker concepts
 
+# Auto-fix script permissions if needed
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ ! -x "$SCRIPT_DIR/scripts/new-wordpress.sh" ]; then
+    chmod +x "$SCRIPT_DIR"/scripts/*.sh 2>/dev/null || true
+fi
+
 # Get the directory where this script is located
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do

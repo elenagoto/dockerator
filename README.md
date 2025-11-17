@@ -31,10 +31,10 @@ docker --version
 # 1. Clone and setup
 git clone https://github.com/elenagoto/dockerator.git
 cd dockerator
+bash install.sh
 cp docker-compose.yml.example docker-compose.yml
 
 # 2. Make globally available
-chmod +x dockerator
 sudo ln -s $(pwd)/dockerator /usr/local/bin/dockerator
 
 # 3. Start services
