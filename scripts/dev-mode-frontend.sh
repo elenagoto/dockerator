@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Enter development mode for a Next.js project
-# Usage: ./dev-mode-nextjs.sh <project-name>
+# Usage: ./dev-mode-frontend.sh <project-name>
 
 set -e
 

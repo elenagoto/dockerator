@@ -10,7 +10,7 @@ Inspired by [devner](https://github.com/MarJC5/devner).
 
 ## ✨ Features
 
-- 🚀 **One-command project creation** - `dockerator new nextjs|wp <name>`
+- 🚀 **One-command project creation** - `dockerator new nextjs|wp|vite <name>`
 - 🗄️ **Shared services** - MySQL, Adminer, Mailpit across all projects
 - 🔄 **Hot reload** - Changes reflect immediately (Vite + Next.js)
 - 🌐 **Clean URLs** - `project-name.localhost` for each project
@@ -80,6 +80,15 @@ dockerator new wp my-site
 dockerator hosts
 dockerator up
 # Visit: http://my-site.localhost
+```
+
+### Vite/React Project
+
+```bash
+dockerator new wp my-vite
+dockerator hosts
+dockerator up
+# Visit: http://my-vite.localhost
 ```
 
 ---
@@ -160,8 +169,8 @@ dockerator/
 │   ├── new-wordpress.sh
 │   ├── list-projects.sh
 │   ├── open-project.sh
-│   ├── dev-mode.sh
-│   ├── dev-mode-nextjs.sh
+│   ├── dev-mode-wp.sh
+│   ├── dev-mode-frontend.sh
 │   └── sync-hosts.sh
 └── apps/                           # Your projects (git-ignored)
 ```

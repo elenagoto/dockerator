@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Enter development mode for a WordPress project
-# Usage: ./dev-mode.sh <project-name>
+# Usage: ./dev-mode-wp.sh <project-name>
 
 set -e
 
