@@ -38,8 +38,6 @@ cat > "$SERVICE_FILE" << EOF
       - ./apps/$APP_NAME:/app
       - /app/node_modules
       - /app/.next
-    environment:
-      - NODE_ENV=development
     networks:
       - dockerator
     restart: unless-stopped

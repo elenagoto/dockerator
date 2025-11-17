@@ -45,13 +45,15 @@ show_header() {
 show_menu() {
     echo ""
     echo "Available commands:"
-    echo "  new <type> <name>  - Create new project (nextjs, wp)"
-    echo "  list               - List all projects"
     echo "  up                 - Start all containers"
     echo "  down               - Stop all containers"
-    echo "  logs <name>        - View logs for a project"
+    echo "  new <type> <name>  - Create new project (nextjs, wp)"
+    echo "  open <name>        - Open a project in VS Code"
     echo "  remove <name>      - Remove a project"
     echo "  dev-wp <name>      - Enter WordPress dev mode (with Vite)"
+    echo "  dev-nextjs <name>  - Enter Next.js dev mode"
+    echo "  list               - List all projects"
+    echo "  logs <name>        - View logs for a project"
     echo "  hosts              - Sync /etc/hosts with all *.localhost domains"
     echo "  help               - Show this menu"
     echo ""
@@ -102,6 +104,15 @@ case $COMMAND in
         PROJECT_NAME=$2
         ./scripts/remove-project.sh "$PROJECT_NAME"
         ;;
+    open)
+        if [ -z "$2" ]; then
+            echo -e "${RED}Usage: dockerator open <project-name>${NC}"
+            exit 1
+        fi
+        
+        PROJECT_NAME=$2
+        ./scripts/open-project.sh "$PROJECT_NAME"
+        ;;
     dev-wp)
         if [ -z "$2" ]; then
             echo -e "${RED}Usage: dockerator dev <project-name>${NC}"
@@ -110,6 +121,15 @@ case $COMMAND in
         
         PROJECT_NAME=$2
         ./scripts/dev-mode.sh "$PROJECT_NAME"
+        ;;
+    dev-nextjs)
+        if [ -z "$2" ]; then
+            echo -e "${RED}Usage: dockerator dev-nextjs <project-name>${NC}"
+            exit 1
+        fi
+        
+        PROJECT_NAME=$2
+        ./scripts/dev-mode-nextjs.sh "$PROJECT_NAME"
         ;;
     hosts)
         echo "DEBUG: Running sync-hosts.sh"
