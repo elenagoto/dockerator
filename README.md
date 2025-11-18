@@ -42,7 +42,7 @@ git clone https://github.com/elenagoto/dockerator.git
 cd dockerator
 bash install.sh
 
-# 2. Start services
+# 2. Start base services
 dockerator up
 
 # 3. Sync hosts file
@@ -69,7 +69,7 @@ dockerator hosts
 ```bash
 dockerator new nextjs my-app
 dockerator hosts
-dockerator up
+dockerator start my-app
 # Visit: http://my-app.localhost
 ```
 
@@ -78,7 +78,7 @@ dockerator up
 ```bash
 dockerator new wp my-site
 dockerator hosts
-dockerator up
+dockerator start my-site
 # Visit: http://my-site.localhost
 ```
 
@@ -87,7 +87,7 @@ dockerator up
 ```bash
 dockerator new wp my-vite
 dockerator hosts
-dockerator up
+dockerator start my-vite
 # Visit: http://my-vite.localhost
 ```
 
@@ -116,11 +116,15 @@ dockerator dev-wp my-site
 
 ---
 
-### 💻 Next.js Development
+### 💻 Next.js/Vite Development
 
 ```bash
 # Enter dev mode
 dockerator dev-nextjs my-app
+# or
+dockerator dev-vite my-app
+# or
+dockerator dev-front my-app
 
 # Inside container:
 📦 Installing new packages:
@@ -142,8 +146,8 @@ dockerator dev-nextjs my-app
 ```bash
 dockerator list            # List all projects with status
 dockerator open <name>     # Open project in VS Code
-dockerator up              # Start all containers
-dockerator down            # Stop all containers
+dockerator start <name>    # Start project
+dockerator stop <name>     # Stop project
 dockerator logs <name>     # View logs
 dockerator remove <name>   # Remove project completely
 dockerator hosts           # Sync /etc/hosts
@@ -164,14 +168,32 @@ dockerator/
 ├── scripts/
 │   ├── templates/                  # Project templates
 │   │   ├── nextjs/
+│   │   │   ├── .dockerignore
+│   │   │   ├── .gitkeep
+│   │   │   └── Dockerfile
+│   │   ├── vite/
+│   │   │   ├── .dockerignore
+│   │   │   └── Dockerfile
 │   │   └── wordpress/
-│   ├── new-nextjs.sh
-│   ├── new-wordpress.sh
-│   ├── list-projects.sh
-│   ├── open-project.sh
-│   ├── dev-mode-wp.sh
-│   ├── dev-mode-frontend.sh
-│   └── sync-hosts.sh
+│   │       ├── .gitkeep
+│   │       ├── Caddyfile
+│   │       ├── Dockerfile
+│   │       └── wp-config.php.template
+│   ├── add-to-compose.sh           # Add NextJS project to compose
+│   ├── add-to-compose-vite.sh      # Add Vite project to compose
+│   ├── add-to-compose-wp.sh        # Add WordPress to compose
+│   ├── dev-mode-frontend.sh        # Enter Next.js/Vite dev mode
+│   ├── dev-mode-wp.sh              # Enter WordPress dev mode
+│   ├── list-projects.sh            # List all projects
+│   ├── new-nextjs.sh               # Create Next.js project
+│   ├── new-vite-react.sh           # Create Vite React project
+│   ├── new-wordpress.sh            # Create WordPress project
+│   ├── open-project.sh             # Open project in VS Code
+│   ├── remove-from-compose.sh      # Remove project from compose
+│   ├── remove-project.sh           # Delete project completely
+│   ├── start-project.sh            # Start a project
+│   ├── stop-project.sh             # Stop a project
+│   └── sync-hosts.sh               # Sync /etc/hosts file
 └── apps/                           # Your projects (git-ignored)
 ```
 
