@@ -56,6 +56,8 @@ show_menu() {
     echo "  new <type> <name>  - Create new project (nextjs, wp, vite)"
     echo "  open <name>        - Open a project in VS Code"
     echo "  remove <name>      - Remove a project"
+    echo "  start <name>       - Start a specific project"
+    echo "  stop <name>        - Stop a specific project"
     echo "  dev-wp <name>      - Enter WordPress dev mode (with Vite)"
     echo "  dev-nextjs <name>  - Enter Next.js dev mode"
     echo "  dev-vite <name>    - Enter Vite React dev mode"
@@ -151,6 +153,25 @@ case $COMMAND in
         ;;
     list)
         ./scripts/list-projects.sh
+        ;;
+    start)
+        if [ -z "$2" ]; then
+            echo -e "${RED}Usage: dockerator start <project-name>${NC}"
+            exit 1
+        fi
+        
+        PROJECT_NAME=$2
+        ./scripts/start-project.sh "$PROJECT_NAME"
+        ;;
+    
+    stop)
+        if [ -z "$2" ]; then
+            echo -e "${RED}Usage: dockerator stop <project-name>${NC}"
+            exit 1
+        fi
+        
+        PROJECT_NAME=$2
+        ./scripts/stop-project.sh "$PROJECT_NAME"
         ;;
     up)
         docker-compose up -d

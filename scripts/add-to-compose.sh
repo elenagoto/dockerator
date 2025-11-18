@@ -30,6 +30,8 @@ cat > "$SERVICE_FILE" << EOF
       context: ./apps/$APP_NAME
       dockerfile: Dockerfile
     container_name: dockerator_$SAFE_NAME
+    profiles:
+      - projects
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.$SAFE_NAME.rule=Host(\`$SAFE_NAME.localhost\`)"
@@ -40,7 +42,7 @@ cat > "$SERVICE_FILE" << EOF
       - /app/.next
     networks:
       - dockerator
-    restart: unless-stopped
+    restart: "no"  # change to unless-stopped if you want it to persist
     
 EOF
 

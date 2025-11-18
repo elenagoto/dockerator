@@ -32,6 +32,8 @@ cat > "$SERVICE_FILE" << EOF
       context: ./apps/$APP_NAME
       dockerfile: Dockerfile
     container_name: dockerator_$SAFE_URL
+    profiles:
+      - projects
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.$SAFE_URL.rule=Host(\`$SAFE_URL.localhost\`)"
@@ -51,7 +53,7 @@ cat > "$SERVICE_FILE" << EOF
     depends_on:
       mysql:
         condition: service_healthy
-    restart: unless-stopped
+    restart: "no"  # change to unless-stopped if you want it to persist
 EOF
 
 # Create new compose file by inserting service before volumes

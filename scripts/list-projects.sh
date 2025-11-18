@@ -47,6 +47,9 @@ for project in $ALL_SERVICES; do
     if [ -f "apps/$project/wp-config.php" ]; then
         TYPE="${CYAN}WordPress${NC}"
         TYPE_DISPLAY="WordPress"
+    elif [ -f "apps/$project/vite.config.js" ] || [ -f "apps/$project/vite.config.ts" ]; then
+        TYPE="${YELLOW}Vite React${NC}"
+        TYPE_DISPLAY="Vite React"
     elif [ -f "apps/$project/package.json" ]; then
         TYPE="${GREEN}Next.js${NC}"
         TYPE_DISPLAY="Next.js  "
@@ -76,8 +79,8 @@ done
 
 echo ""
 echo "Commands:"
-echo "  dockerator up              - Start all projects"
-echo "  dockerator down            - Stop all projects"
+echo "  dockerator start <project>    - Start a specific project"
+echo "  dockerator stop <project>     - Stop a specific project"
 echo "  dockerator logs <project>  - View project logs"
 echo "  dockerator open <project>  - Open in VS Code"
 echo ""
