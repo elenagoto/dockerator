@@ -21,7 +21,8 @@ if ! grep -q "^  $SAFE_NAME:" "$COMPOSE_FILE"; then
 fi
 
 # Use sed to remove the service block
-# Pattern: From "  servicename:" to "    restart: unless-stopped"
+# Pattern: From "  servicename:" to "    restart: "no" or unless-stopped"
+sed -i.bak "/^  $SAFE_NAME:/,/^    restart: \"no\"/d" "$COMPOSE_FILE"
 sed -i.bak "/^  $SAFE_NAME:/,/^    restart: unless-stopped/d" "$COMPOSE_FILE"
 
 # Also remove the backup file

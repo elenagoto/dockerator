@@ -72,6 +72,12 @@ if [ ! -f "$APP_DIR/Dockerfile" ]; then
 else
     echo -e "${YELLOW}⚠️  Dockerfile already exists${NC}"
 fi
+if [ ! -f "$APP_DIR/.dockerignore" ]; then
+    cp scripts/templates/wordpress/.dockerignore "$APP_DIR/"
+    echo -e "${GREEN}✅ Created .dockerignore${NC}"
+else
+    echo -e "${YELLOW}⚠️ .dockerignore already exists${NC}"
+fi
 
 if [ ! -f "$APP_DIR/Caddyfile" ]; then
     cp scripts/templates/wordpress/Caddyfile "$APP_DIR/"

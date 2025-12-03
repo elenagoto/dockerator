@@ -44,81 +44,36 @@ else
 fi
 
 # ============================================
-# STEP 2: Create package.json
+# STEP 2: Copy package.json
 # ============================================
-if [ -f "$APP_DIR/package.json" ]; then
-    echo -e "${YELLOW}⚠️  package.json already exists${NC}"
-else
-    cat > "$APP_DIR/package.json" << EOF
-{
-  "name": "$APP_NAME",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "next": "^15.0.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  }
-}
-EOF
+if [ ! -f "$APP_DIR/package.json" ]; then
+    sed -e 's/$APP_NAME/'"$APP_NAME"'/g'  \
+        scripts/templates/nextjs/package.json > "$APP_DIR/package.json"
     echo -e "${GREEN}✅ Created package.json${NC}"
+else
+   echo -e "${YELLOW}⚠️  package.json already exists${NC}"
 fi
 
 # ============================================
 # STEP 3: Create Dockerfile
 # ============================================
-
-if [ -f "$APP_DIR/Dockerfile" ]; then
-    echo -e "${YELLOW}⚠️  Dockerfile already exists${NC}"
-else
-    cat > "$APP_DIR/Dockerfile" << EOF
-# Use Node.js 20 on Alpine Linux (lightweight)
-FROM node:20-alpine
-
-# Set working directory inside container
-WORKDIR /app
-
-# Copy package files first (for better caching)
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose port 3000 (Next.js default)
-EXPOSE 3000
-
-# Start the development server
-CMD ["npm", "run", "dev"]
-
-EOF
+if [ ! -f "$APP_DIR/Dockerfile" ]; then
+   cp scripts/templates/nextjs/Dockerfile "$APP_DIR/"
     echo -e "${GREEN}✅ Created Dockerfile${NC}"
+else
+    echo -e "${YELLOW}⚠️  Dockerfile already exists${NC}"
 fi
 
 # ============================================
 # STEP 4: Create .dockerignore
 # ============================================
 
-if [ -f "$APP_DIR/.dockerignore" ]; then
-    echo -e "${YELLOW}⚠️  .dockerignore already exists${NC}"
-else
-    cat > "$APP_DIR/.dockerignore" << EOF
-node_modules
-.next
-.git
-.DS_Store
-npm-debug.log
-.env*.local
-README.md
-EOF
+if [ ! -f "$APP_DIR/.dockerignore" ]; then  
+    cp scripts/templates/nextjs/.dockerignore "$APP_DIR/"
     echo -e "${GREEN}✅ Created .dockerignore${NC}"
+else
+   echo -e "${YELLOW}⚠️  .dockerignore already exists${NC}"
+    
 fi
 
 # ============================================
@@ -128,17 +83,16 @@ if [ -d "$APP_DIR/src/app" ]; then
     echo -e "${YELLOW}⚠️  Next.js structure already exists${NC}"
 else
     mkdir -p "$APP_DIR/src/app"
-    cat > "$APP_DIR/src/app/page.js" << EOF
-export default function Home() {
-  return (
-    <main style={{ padding: '2rem', fontFamily: 'system-ui' }}>
-      <h1>🎯 $APP_NAME</h1>
-      <p>Running in Dockerator!</p>
-      <p>Access via: <a href="http://$SAFE_NAME.localhost">$SAFE_NAME.localhost</a></p>
-    </main>
-  )
-}
-EOF
+    sed -e 's/$APP_NAME/'"$APP_NAME"'/g' \
+        -e 's/$SAFE_NAME/'"$SAFE_NAME"'/g' \
+        scripts/templates/nextjs/page.js > "$APP_DIR/src/app/page.js"
+    sed -e 's/$APP_NAME/'"$APP_NAME"'/g' \
+        -e 's/$SAFE_NAME/'"$SAFE_NAME"'/g' \
+        scripts/templates/nextjs/layout.js > "$APP_DIR/src/app/layout.js"
+    cp scripts/templates/nextjs/styles.css "$APP_DIR/src/app/styles.css"
+    mkdir -p "$APP_DIR/src/app/src/components"
+    mkdir -p "$APP_DIR/src/app/public"
+
     echo -e "${GREEN}✅ Created Next.js structure${NC}"
 fi
 
@@ -146,7 +100,7 @@ fi
 # STEP 6: Add to docker-compose.yml
 # ============================================
 if [ "$IN_COMPOSE" = false ]; then
-    ./scripts/add-to-compose.sh "$APP_NAME"
+    ./scripts/add-to-compose-nextjs.sh "$APP_NAME"
 fi
 
 # ============================================
@@ -167,6 +121,6 @@ echo -e "${GREEN}🎉 Project '$APP_NAME' ready!${NC}"
 echo ""
 echo "Next steps:"
 echo "  1. Sync hosts: dockerator hosts"
-echo "  2. Start containers: dockerator up"
+echo "  2. Start container: dockerator start $SAFE_NAME"
 echo "  3. Access app: http://$SAFE_NAME.localhost"
 echo "  4. View logs: dockerator logs $SAFE_NAME"
