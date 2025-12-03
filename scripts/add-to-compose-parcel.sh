@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Add a new service to docker-compose.yml with safety checks
-# Usage: ./add-to-compose.sh <app-name>
+# Usage: ./add-to-compose-nextjs.sh <app-name>
 
 APP_NAME=$1
 COMPOSE_FILE="docker-compose.yml"
@@ -35,11 +35,10 @@ cat > "$SERVICE_FILE" << EOF
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.$SAFE_NAME.rule=Host(\`$SAFE_NAME.localhost\`)"
-      - "traefik.http.services.$SAFE_NAME.loadbalancer.server.port=3000"
+      - "traefik.http.services.$SAFE_NAME.loadbalancer.server.port=1234"
     volumes:
       - ./apps/$APP_NAME:/app
       - /app/node_modules
-      - /app/.next
     networks:
       - dockerator
     restart: "no"  # change to unless-stopped if you want it to persist

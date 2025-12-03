@@ -53,7 +53,7 @@ show_menu() {
     echo "Available commands:"
     echo "  up                 - Start all containers"
     echo "  down               - Stop all containers"
-    echo "  new <type> <name>  - Create new project (nextjs, wp, vite)"
+    echo "  new <type> <name>  - Create new project (nextjs, wp, vite, parcel)"
     echo "  open <name>        - Open a project in VS Code"
     echo "  remove <name>      - Remove a project"
     echo "  start <name>       - Start a specific project"
@@ -100,6 +100,9 @@ case $COMMAND in
                 ;;
             vite)
                 ./scripts/new-vite-react.sh "$PROJECT_NAME"
+                ;;
+            parcel)
+                ./scripts/new-parcel.sh "$PROJECT_NAME"
                 ;;
             *)
                 echo -e "${RED}Unknown project type: $PROJECT_TYPE${NC}"

@@ -179,7 +179,7 @@ dockerator/
 │   │       ├── Caddyfile
 │   │       ├── Dockerfile
 │   │       └── wp-config.php.template
-│   ├── add-to-compose.sh           # Add NextJS project to compose
+│   ├── add-to-compose-nextjs.sh           # Add NextJS project to compose
 │   ├── add-to-compose-vite.sh      # Add Vite project to compose
 │   ├── add-to-compose-wp.sh        # Add WordPress to compose
 │   ├── dev-mode-frontend.sh        # Enter Next.js/Vite dev mode
