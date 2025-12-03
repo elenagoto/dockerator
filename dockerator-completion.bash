@@ -9,7 +9,7 @@ _dockerator_completions() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     
     # Main commands
-    commands="new open list up down logs remove dev-wp dev-nextjs hosts help"
+    commands="new open list up down logs remove start stop dev-wp dev-nextjs dev-vite dev-front hosts help"
     
     # Get projects from docker-compose.yml
     if [ -f "$HOME/.dockerator-path" ]; then
@@ -30,10 +30,10 @@ _dockerator_completions() {
             return 0
             ;;
         new)
-            COMPREPLY=($(compgen -W "nextjs wp" -- ${cur}))
+            COMPREPLY=($(compgen -W "nextjs wp vite parcel" -- ${cur}))
             return 0
             ;;
-        open|logs|remove|dev-wp|dev-nextjs)
+        open|logs|remove|start|stop|dev-wp|dev-nextjs|dev-vite|dev-front)
             COMPREPLY=($(compgen -W "${projects}" -- ${cur}))
             return 0
             ;;

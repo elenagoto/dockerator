@@ -8,8 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install \
-  && npx update-browserslist-db@latest --update-db || true
+RUN npm install
 
 # Copy the rest of the application code
 COPY . .
